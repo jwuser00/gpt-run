@@ -1,0 +1,36 @@
+schema_version: 2
+kit_repo_url: /Users/1113622/test-project/ai-dev-assets-test
+kit_tag: local
+resolved_commit_sha: local
+selected_packs:
+- common
+- fastapi
+- python
+- typescript-react
+generated_at: '2026-02-20T00:12:12.785940+09:00'
+tool_name: cursor-kit-mcp
+tool_version: 0.1.0
+installed_files:
+- .cursor/agents/common-test-agent.md
+- .cursor/agents/fastapi-impl-agent.md
+- .cursor/agents/python-impl-agent.md
+- .cursor/agents/typescript-react-impl-agent.md
+- .cursor/rules/common-security-rule.md
+- .cursor/rules/fastapi-coding-style.md
+- .cursor/rules/python-coding-style.md
+- .cursor/rules/typescript-react-coding_style.md
+- .cursor/skills/common-coding-guide
+- .cursor/skills/common-create-project
+- .cursor/skills/common-database-guide
+- .cursor/skills/common-setup-vscode
+- .cursor/skills/common-testing-guide
+- .cursor/skills/fastapi-setup-vscode
+- .cursor/skills/python-setup-vscode
+- .cursor/skills/typescript-react-component-guide
+- .cursor/skills/typescript-react-create-project
+- .cursor/skills/typescript-react-governance-guide
+- .cursor/skills/typescript-react-packaging-guide
+- .cursor/skills/typescript-react-react-guide
+- .cursor/skills/typescript-react-setup-vscode
+- .cursor/skills/typescript-react-testing-guide
+- .cursor/skills/typescript-react-vite-guide

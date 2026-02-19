@@ -1,23 +1,17 @@
-[tool.poetry]
+[project]
 name = "running-manager-backend"
 version = "0.1.0"
 description = "Running Manager API (FastAPI)"
-authors = ["Your Name <you@example.com>"]
-readme = "README.md"
-package-mode = false
-
-[tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "*"
-uvicorn = "*"
-sqlalchemy = "*"
-passlib = "*"
-bcrypt = "4.0.1"
-"python-jose" = {extras = ["cryptography"], version = "*"}
-python-multipart = "*"
-lxml = "*"
-python-dateutil = "*"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "sqlalchemy",
+    "passlib",
+    "bcrypt==4.0.1",
+    "python-jose[cryptography]",
+    "python-multipart",
+    "lxml",
+    "python-dateutil",
+    "aiofiles",
+]
