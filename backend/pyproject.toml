@@ -14,4 +14,6 @@ dependencies = [
     "lxml",
     "python-dateutil",
     "aiofiles",
+    "pymysql",
+    "python-dotenv>=1.2.1",
 ]

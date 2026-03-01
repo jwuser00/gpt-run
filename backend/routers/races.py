@@ -13,7 +13,7 @@ router = APIRouter(
     tags=["races"],
 )
 
-UPLOAD_DIR = "uploads/races"
+UPLOAD_DIR = os.path.join(os.getenv("UPLOAD_DIR", "uploads"), "races")
 MAX_IMAGES_PER_RACE = 5
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg"}

@@ -1,15 +1,40 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-running_manager}
+      MYSQL_USER: ${DB_USER:-running}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-running}
+    volumes:
+      - ${MYSQL_DATA_DIR:-./data/mysql}:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - backend-uploads:/app/uploads
+      - ${UPLOAD_DATA_DIR:-./data/uploads}:/app/uploads
     environment:
-      - SECRET_KEY=supersecretkey
+      - DB_HOST=mysql
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_NAME=${DB_NAME:-running_manager}
+      - DB_USER=${DB_USER:-running}
+      - DB_PASSWORD=${DB_PASSWORD:-running}
+      - SECRET_KEY=${SECRET_KEY:-supersecretkey}
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   frontend:
     build: ./frontend-ts
@@ -17,6 +42,3 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-
-volumes:
-  backend-uploads:

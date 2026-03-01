@@ -23,8 +23,8 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    email = Column(String(255), unique=True, index=True)
+    hashed_password = Column(String(255))
 
     activities = relationship(
         "Activity",
@@ -77,9 +77,9 @@ class Race(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
-    race_name = Column(String, nullable=False)
+    race_name = Column(String(200), nullable=False)
     race_date = Column(DateTime, nullable=False)
-    location = Column(String, nullable=True)
+    location = Column(String(200), nullable=True)
     distance_type = Column(Enum(DistanceType), nullable=False)
     distance_custom = Column(Float, nullable=True)  # meters, for custom distance
     target_time = Column(Float, nullable=True)  # seconds
@@ -102,8 +102,8 @@ class RaceImage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     race_id = Column(Integer, ForeignKey("races.id", ondelete="CASCADE"))
-    filename = Column(String, nullable=False)  # UUID-based filename
-    original_name = Column(String, nullable=False)
+    filename = Column(String(255), nullable=False)  # UUID-based filename
+    original_name = Column(String(255), nullable=False)
     uploaded_at = Column(DateTime, nullable=False)
 
     race = relationship("Race", back_populates="images")

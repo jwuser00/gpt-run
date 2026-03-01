@@ -43,6 +43,7 @@ env/
 # Env / secrets
 .env
 .env.*
+!.env.sample
 *.pem
 
 # Databases & local data
@@ -50,6 +51,7 @@ sql_app.db
 *.sqlite
 *.sqlite3
 *.db
+data/
 
 # IDE
 .vscode/
