@@ -1,0 +1,60 @@
+#cloud-config
+
+timezone: Asia/Seoul
+
+# --- System Packages ---
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - iptables-persistent
+
+# --- Docker + Docker Compose Install ---
+runcmd:
+  # Docker GPG key
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+
+  # Docker repository
+  - |
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+
+  # Install Docker Engine + Compose plugin
+  - apt-get update
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # Add ubuntu user to docker group
+  - usermod -aG docker ubuntu
+
+  # Enable Docker service
+  - systemctl enable docker
+  - systemctl start docker
+
+  # --- Application Directory ---
+  - mkdir -p /opt/running-manager/data/mysql
+  - mkdir -p /opt/running-manager/data/uploads
+  - chown -R ubuntu:ubuntu /opt/running-manager
+
+  # --- iptables Firewall ---
+  - iptables -F
+  - iptables -A INPUT -i lo -j ACCEPT
+  - iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  - iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+  - iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+  - iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+  - iptables -A INPUT -p tcp --dport 8000 -j ACCEPT
+  - iptables -A INPUT -p icmp -j ACCEPT
+  - iptables -A INPUT -j DROP
+  - netfilter-persistent save
+
+  # --- SSH Hardening ---
+  - sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -i 's/^#\?ChallengeResponseAuthentication.*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
+  - systemctl restart sshd
+
+final_message: "Cloud-init completed after $UPTIME seconds"

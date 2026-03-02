@@ -45,6 +45,7 @@ env/
 .env.*
 !.env.sample
 *.pem
+.my-docs/key/
 
 # Databases & local data
 sql_app.db
@@ -64,3 +65,11 @@ data/
 
 # Testing
 coverage/
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/terraform.tfvars
+terraform/retry-apply.log
+terraform/results.md

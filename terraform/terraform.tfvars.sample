@@ -1,0 +1,15 @@
+# Copy this file to terraform.tfvars and fill in your values:
+#   cp terraform.tfvars.sample terraform.tfvars
+#
+# terraform.tfvars is gitignored and will NOT be committed.
+
+region           = "ap-chuncheon-1"
+compartment_ocid = "ocid1.compartment.oc1..xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Optional overrides (uncomment to change defaults)
+# instance_shape          = "VM.Standard.A1.Flex"
+# instance_ocpus          = 4
+# instance_memory_in_gbs  = 24
+# boot_volume_size_in_gbs = 100
+# ssh_public_key_path     = "~/.ssh/oci_arm.pub"
+# project_name            = "running-manager"
