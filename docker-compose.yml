@@ -23,7 +23,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
       - ${UPLOAD_DATA_DIR:-./data/uploads}:/app/uploads
     environment:
       - DB_HOST=mysql
@@ -32,12 +31,16 @@ services:
       - DB_USER=${DB_USER:-running}
       - DB_PASSWORD=${DB_PASSWORD:-running}
       - SECRET_KEY=${SECRET_KEY:-supersecretkey}
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
     depends_on:
       mysql:
         condition: service_healthy
 
   frontend:
-    build: ./frontend-ts
+    build:
+      context: ./frontend-ts
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     ports:
       - "3000:3000"
     depends_on:

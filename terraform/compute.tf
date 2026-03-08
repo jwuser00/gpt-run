@@ -28,39 +28,29 @@ data "cloudinit_config" "server" {
   }
 }
 
-# --- Compute Instances ---
-
-locals {
-  instances = {
-    "small-1" = { ocpus = 1, memory = 6, boot_volume = 50 }
-    "small-2" = { ocpus = 1, memory = 6, boot_volume = 50 }
-    "medium"  = { ocpus = 2, memory = 12, boot_volume = 100 }
-  }
-}
+# --- Compute Instance ---
 
 resource "oci_core_instance" "server" {
-  for_each = local.instances
-
   compartment_id      = var.compartment_ocid
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   shape               = var.instance_shape
-  display_name        = "${var.project_name}-${each.key}"
+  display_name        = "${var.project_name}-server"
 
   shape_config {
-    ocpus         = each.value.ocpus
-    memory_in_gbs = each.value.memory
+    ocpus         = 4
+    memory_in_gbs = 24
   }
 
   source_details {
     source_type             = "image"
     source_id               = data.oci_core_images.ubuntu_arm.images[0].id
-    boot_volume_size_in_gbs = each.value.boot_volume
+    boot_volume_size_in_gbs = 100
   }
 
   create_vnic_details {
     subnet_id        = oci_core_subnet.public.id
     assign_public_ip = true
-    display_name     = "${var.project_name}-${each.key}-vnic"
+    display_name     = "${var.project_name}-vnic"
   }
 
   metadata = {

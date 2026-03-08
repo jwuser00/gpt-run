@@ -19,6 +19,10 @@ origins = [
     "http://127.0.0.1:5173",
 ]
 
+cors_env = os.getenv("CORS_ORIGINS", "")
+if cors_env:
+    origins.extend([o.strip() for o in cors_env.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

@@ -39,13 +39,17 @@ runcmd:
   - mkdir -p /opt/running-manager/data/uploads
   - chown -R ubuntu:ubuntu /opt/running-manager
 
-  # --- iptables Firewall ---
-  - iptables -F
+  # --- iptables Firewall (Docker-compatible) ---
+  # NOTE: Only set INPUT chain rules. Do NOT touch FORWARD/NAT chains
+  # as Docker manages those itself after service start.
+  - iptables -F INPUT
   - iptables -A INPUT -i lo -j ACCEPT
+  - iptables -A INPUT -i docker0 -j ACCEPT
   - iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
   - iptables -A INPUT -p tcp --dport 22 -j ACCEPT
   - iptables -A INPUT -p tcp --dport 80 -j ACCEPT
   - iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+  - iptables -A INPUT -p tcp --dport 3000 -j ACCEPT
   - iptables -A INPUT -p tcp --dport 8000 -j ACCEPT
   - iptables -A INPUT -p icmp -j ACCEPT
   - iptables -A INPUT -j DROP

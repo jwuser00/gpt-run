@@ -80,6 +80,18 @@ resource "oci_core_security_list" "public" {
     }
   }
 
+  # Ingress: Frontend (3000)
+  ingress_security_rules {
+    source    = "0.0.0.0/0"
+    protocol  = "6"
+    stateless = false
+
+    tcp_options {
+      min = 3000
+      max = 3000
+    }
+  }
+
   # Ingress: API dev (8000)
   ingress_security_rules {
     source    = "0.0.0.0/0"
