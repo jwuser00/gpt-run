@@ -55,7 +55,6 @@ sql_app.db
 data/
 
 # IDE
-.vscode/
 .idea/
 *.suo
 *.ntvs*
