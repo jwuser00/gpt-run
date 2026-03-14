@@ -1,5 +1,6 @@
+export type LLMEvaluationStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
 export interface Lap {
-  id: number;
   lap_number: number;
   distance: number;
   time: number;
@@ -17,6 +18,12 @@ export interface Activity {
   avg_pace: number;
   avg_hr: number | null;
   avg_cadence: number | null;
+  is_treadmill: boolean;
+  llm_evaluation: string | null;
+  llm_evaluation_status: LLMEvaluationStatus | null;
+}
+
+export interface ActivityDetail extends Activity {
   laps: Lap[];
 }
 

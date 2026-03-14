@@ -40,6 +40,19 @@ export default function ActivitiesPage() {
     loadActivities();
   }, [loadActivities]);
 
+  // Auto-refresh when any activity has pending/processing LLM evaluation
+  useEffect(() => {
+    const hasPending = activities.some(
+      (a) =>
+        a.llm_evaluation_status === 'pending' ||
+        a.llm_evaluation_status === 'processing',
+    );
+    if (!hasPending) return;
+
+    const interval = setInterval(loadActivities, 10000);
+    return () => clearInterval(interval);
+  }, [activities, loadActivities]);
+
   const years = Array.from(
     new Set(activities.map((a) => new Date(a.start_time).getFullYear()))
   ).sort((a, b) => b - a);

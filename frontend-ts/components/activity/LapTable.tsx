@@ -30,7 +30,7 @@ export default function LapTable({ laps }: LapTableProps) {
         </TableHead>
         <TableBody>
           {laps.map((lap) => (
-            <TableRow key={lap.id} hover>
+            <TableRow key={lap.lap_number} hover>
               <TableCell>{lap.lap_number}</TableCell>
               <TableCell>{(lap.distance / 1000).toFixed(2)} km</TableCell>
               <TableCell>{formatTime(lap.time)}</TableCell>

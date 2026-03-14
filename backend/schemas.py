@@ -4,40 +4,49 @@ from datetime import datetime
 from enum import Enum
 
 
-class LapBase(BaseModel):
+class LLMEvaluationStatus(str, Enum):
+    pending = "pending"
+    processing = "processing"
+    completed = "completed"
+    failed = "failed"
+
+
+class ComputedLap(BaseModel):
     lap_number: int
     distance: float
     time: float
     pace: float
-    avg_hr: Optional[float] = None
-    max_hr: Optional[float] = None
-    avg_cadence: Optional[float] = None
+    avg_hr: float | None = None
+    max_hr: float | None = None
+    avg_cadence: float | None = None
 
-class Lap(LapBase):
-    id: int
-    activity_id: int
-
-    class Config:
-        from_attributes = True
 
 class ActivityBase(BaseModel):
     start_time: datetime
     total_distance: float
     total_time: float
     avg_pace: float
-    avg_hr: Optional[float] = None
-    avg_cadence: Optional[float] = None
+    avg_hr: float | None = None
+    avg_cadence: float | None = None
+
 
 class ActivityCreate(ActivityBase):
     pass
 
+
 class Activity(ActivityBase):
     id: int
     user_id: int
-    laps: List[Lap] = []
+    is_treadmill: bool = False
+    llm_evaluation: str | None = None
+    llm_evaluation_status: LLMEvaluationStatus | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ActivityDetail(Activity):
+    laps: list[ComputedLap] = []
+
 
 class UserBase(BaseModel):
     email: str
@@ -52,9 +61,9 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     nickname: str
-    birth_year: Optional[int] = None
-    birth_month: Optional[int] = None
-    gender: Optional[str] = None
+    birth_year: int | None = None
+    birth_month: int | None = None
+    gender: str | None = None
     has_password: bool = False
     activities: List[Activity] = []
 
@@ -76,9 +85,9 @@ class PasswordChangeRequest(BaseModel):
 class UserProfile(BaseModel):
     email: str
     nickname: str
-    birth_year: Optional[int] = None
-    birth_month: Optional[int] = None
-    gender: Optional[str] = None
+    birth_year: int | None = None
+    birth_month: int | None = None
+    gender: str | None = None
     has_google: bool
     has_password: bool
 
@@ -102,7 +111,7 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    email: Optional[str] = None
+    email: str | None = None
 
 
 # --- Race schemas ---
@@ -127,45 +136,44 @@ class RaceImageOut(BaseModel):
     original_name: str
     uploaded_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RaceBase(BaseModel):
     race_name: str
     race_date: datetime
-    location: Optional[str] = None
+    location: str | None = None
     distance_type: DistanceType
-    distance_custom: Optional[float] = None
-    target_time: Optional[float] = None
-    actual_time: Optional[float] = None
+    distance_custom: float | None = None
+    target_time: float | None = None
+    actual_time: float | None = None
     status: RaceStatus = RaceStatus.upcoming
-    activity_id: Optional[int] = None
-    review: Optional[str] = None
+    activity_id: int | None = None
+    review: str | None = None
 
 # Registration: only basic info
 class RaceCreate(BaseModel):
     race_name: str
     race_date: datetime
-    location: Optional[str] = None
+    location: str | None = None
     distance_type: DistanceType
-    distance_custom: Optional[float] = None
-    target_time: Optional[float] = None
+    distance_custom: float | None = None
+    target_time: float | None = None
 
 # Edit basic info
 class RaceUpdate(BaseModel):
-    race_name: Optional[str] = None
-    race_date: Optional[datetime] = None
-    location: Optional[str] = None
-    distance_type: Optional[DistanceType] = None
-    distance_custom: Optional[float] = None
-    target_time: Optional[float] = None
+    race_name: str | None = None
+    race_date: datetime | None = None
+    location: str | None = None
+    distance_type: DistanceType | None = None
+    distance_custom: float | None = None
+    target_time: float | None = None
 
 # Result update: status, actual_time, review, activity_id
 class RaceResultUpdate(BaseModel):
-    status: Optional[RaceStatus] = None
-    actual_time: Optional[float] = None
-    activity_id: Optional[int] = None
-    review: Optional[str] = None
+    status: RaceStatus | None = None
+    actual_time: float | None = None
+    activity_id: int | None = None
+    review: str | None = None
 
 class ActivityBrief(BaseModel):
     id: int
@@ -174,17 +182,15 @@ class ActivityBrief(BaseModel):
     total_time: float
     avg_pace: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RaceOut(RaceBase):
     id: int
     user_id: int
     images: List[RaceImageOut] = []
-    activity: Optional[ActivityBrief] = None
+    activity: ActivityBrief | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- Dashboard schemas ---
@@ -192,7 +198,7 @@ class RaceOut(RaceBase):
 class MonthlyRunningDay(BaseModel):
     date: str  # YYYY-MM-DD
     distance_km: float
-    avg_pace: Optional[float] = None  # seconds per km
+    avg_pace: float | None = None  # seconds per km
 
 class RecentActivity(BaseModel):
     id: int
@@ -200,10 +206,9 @@ class RecentActivity(BaseModel):
     total_distance: float
     total_time: float
     avg_pace: float
-    avg_hr: Optional[float] = None
+    avg_hr: float | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class DashboardData(BaseModel):
     upcoming_races: List[RaceOut] = []

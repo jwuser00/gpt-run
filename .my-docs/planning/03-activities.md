@@ -25,9 +25,14 @@ GPS 워치에서 추출한 TCX 파일을 드래그앤드롭 또는 클릭으로 
 1. TCX 파일 선택 또는 드래그앤드롭
 2. `.tcx` 확장자 검증
 3. `POST /activities/upload` (multipart/form-data)
-4. 성공 → 성공 토스트 + 목록 새로고침
+4. 성공 → 성공 토스트 + 목록 새로고침 + 카드에 "AI 분석중..." 표시
 5. 중복 (409) → 경고 토스트 "이미 업로드된 활동입니다"
 6. 실패 → 에러 토스트
+
+**업로드 후 LLM 평가:**
+- 업로드 응답은 즉시 반환 (evaluation_status = "pending")
+- 백엔드에서 비동기로 LLM 평가 실행
+- 카드에 evaluation_status 표시: "AI 분석중..." → 완료 시 자동 갱신
 
 ### 2. 활동 필터 (ActivityFilters)
 
@@ -56,6 +61,8 @@ GPS 워치에서 추출한 TCX 파일을 드래그앤드롭 또는 클릭으로 
   - 평균 페이스 (/km)
   - 평균 심박수 (bpm)
   - 평균 케이던스 (spm)
+  - 유형 뱃지: 🏃 야외 / 🏃‍♂️ 트레드밀 (`is_treadmill` 기반)
+  - LLM 평가 상태: "AI 분석중..." / 완료 시 미표시
 - 삭제 버튼 → ConfirmDialog → `DELETE /activities/{id}`
 - 카드 클릭 → `/activity/[id]`
 
@@ -74,9 +81,23 @@ GPS 워치에서 추출한 TCX 파일을 드래그앤드롭 또는 클릭으로 
 **지원 포맷:** Garmin TrainingCenterDatabase v2 XML
 
 **추출 항목:**
-- Activity: start_time, total_distance(m), total_time(s), avg_pace(s/km), avg_hr(bpm), avg_cadence
-- Lap: lap_number, distance(m), time(s), pace(s/km), avg_hr, max_hr, avg_cadence
+- Activity 요약: start_time, total_distance(m), total_time(s), avg_pace(s/km), avg_hr(bpm), avg_cadence
+- 경량 TCX: Lap 요약 + 1분 간격 Trackpoint (시간, 거리, HR, 케이던스, 속도)
+- 트레드밀 판단: Trackpoint 내 Position 태그 유무
+
+**Lap 테이블은 사용하지 않음** — 상세 조회 시 tcx_data를 재파싱하여 랩 정보를 생성한다.
 
 **중복 감지:** `(user_id, start_time)` 조합으로 판단 → 409 Conflict
 
 **Garmin Extensions:** ns3 RunCadence 지원 (표준 Cadence 우선, 없으면 Extensions 사용)
+
+## Implementation Status
+
+| Feature | Status |
+|---------|--------|
+| TCX 파일 업로드 (드래그앤드롭) | Implemented |
+| 활동 목록 (연/월 필터) | Implemented |
+| 활동 삭제 (확인 다이얼로그) | Implemented |
+| 중복 업로드 감지 | Implemented |
+| 트레드밀 뱃지 표시 | Not Implemented |
+| LLM 평가 상태 표시 (카드) | Not Implemented |

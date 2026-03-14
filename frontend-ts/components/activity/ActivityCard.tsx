@@ -7,12 +7,15 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
+import Chip from "@mui/material/Chip";
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PlaceIcon from "@mui/icons-material/Place";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SpeedIcon from "@mui/icons-material/Speed";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { Activity } from "@/lib/types";
 import { toKST, formatTimeFromSeconds, formatPace } from "@/lib/utils/format";
 
@@ -45,18 +48,27 @@ export default function ActivityCard({ activity, onDelete }: ActivityCardProps) 
                 width: 40,
                 height: 40,
                 borderRadius: "50%",
-                bgcolor: "primary.main",
+                bgcolor: activity.is_treadmill ? "grey.600" : "primary.main",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <DirectionsRunIcon sx={{ color: "#fff", fontSize: 20 }} />
+              {activity.is_treadmill ? (
+                <FitnessCenterIcon sx={{ color: "#fff", fontSize: 20 }} />
+              ) : (
+                <DirectionsRunIcon sx={{ color: "#fff", fontSize: 20 }} />
+              )}
             </Box>
             <Box>
-              <Typography variant="subtitle2" fontWeight={700}>
-                {kstDate.toLocaleDateString("ko-KR")}
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Typography variant="subtitle2" fontWeight={700}>
+                  {kstDate.toLocaleDateString("ko-KR")}
+                </Typography>
+                {activity.is_treadmill && (
+                  <Chip label="트레드밀" size="small" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
+                )}
+              </Box>
               <Typography variant="caption" color="text.secondary">
                 {kstDate.toLocaleTimeString("ko-KR")}
               </Typography>
@@ -123,6 +135,22 @@ export default function ActivityCard({ activity, onDelete }: ActivityCardProps) 
             </Typography>
           </Grid>
         </Grid>
+
+        {(activity.llm_evaluation_status === "pending" ||
+          activity.llm_evaluation_status === "processing") && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+              mt: 1.5,
+              color: "text.secondary",
+            }}
+          >
+            <AutoAwesomeIcon sx={{ fontSize: 14 }} />
+            <Typography variant="caption">AI 분석중...</Typography>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );

@@ -11,6 +11,7 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 | Frontend | Next.js 14+ (App Router), TypeScript, Material-UI v5, Recharts |
 | Backend | FastAPI (Python 3.11), SQLAlchemy ORM |
 | Database | MySQL (PyMySQL driver) |
+| LLM | LangChain + LangGraph, Anthropic/OpenAI, Langfuse |
 | Infra | Docker Compose, OCI ARM (Terraform), Nginx |
 
 ## Menu Structure
@@ -74,6 +75,14 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 | **Race Result** | 활동 연결 (TCX 업로드 / 기존 활동 선택) | Implemented |
 | **Race Result** | 사진 업로드 (최대 5장, 5MB) | Implemented |
 | **Race Result** | 후기 작성 | Implemented |
+| **Activity Detail** | 트레드밀 판단 및 표시 | Not Implemented |
+| **Activity Detail** | LLM 러닝 평가 표시 | Not Implemented |
+| **Activities** | 업로드 시 LLM 평가 상태 표시 | Not Implemented |
+| **LLM Coaching** | 경량 TCX 생성 및 저장 | Not Implemented |
+| **LLM Coaching** | LangGraph 평가 파이프라인 | Not Implemented |
+| **LLM Coaching** | Langfuse 추적 연동 | Not Implemented |
+| **LLM Coaching** | Lap 테이블 제거 → TCX 재파싱 | Not Implemented |
+| **LLM Coaching** | 러닝 계획 추천 | Not Implemented (향후) |
 
 ## Detail Documents
 
@@ -86,3 +95,4 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 | [05-races.md](./05-races.md) | 대회 관리 (목록/등록) |
 | [06-race-detail.md](./06-race-detail.md) | 대회 상세/결과 입력 |
 | [07-profile.md](./07-profile.md) | 내 정보 (프로필 조회/수정, 비밀번호 변경) |
+| [08-llm-coaching.md](./08-llm-coaching.md) | AI 러닝 코칭 (LLM 평가, 계획 추천) |

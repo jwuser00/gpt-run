@@ -64,6 +64,39 @@ def _run_migrations() -> None:
 
     # password_reset_tokens 테이블은 create_all로 생성됨
 
+    # laps 테이블 삭제 (Activity.tcx_data 재파싱으로 대체)
+    with engine.begin() as conn:
+        conn.execute(text("DROP TABLE IF EXISTS laps"))
+
+    # activities 테이블 컬럼 추가
+    if "activities" in inspector.get_table_names():
+        existing_act = {col["name"] for col in inspector.get_columns("activities")}
+        act_stmts: list[str] = []
+
+        if "tcx_data" not in existing_act:
+            act_stmts.append(
+                "ALTER TABLE activities ADD COLUMN tcx_data MEDIUMTEXT NULL"
+            )
+        if "is_treadmill" not in existing_act:
+            act_stmts.append(
+                "ALTER TABLE activities ADD COLUMN is_treadmill BOOLEAN NOT NULL DEFAULT FALSE"
+            )
+        if "llm_evaluation" not in existing_act:
+            act_stmts.append(
+                "ALTER TABLE activities ADD COLUMN llm_evaluation VARCHAR(500) NULL"
+            )
+        if "llm_evaluation_status" not in existing_act:
+            act_stmts.append(
+                "ALTER TABLE activities ADD COLUMN llm_evaluation_status "
+                "ENUM('pending','processing','completed','failed') NULL"
+            )
+
+        if act_stmts:
+            with engine.begin() as conn:
+                for stmt in act_stmts:
+                    logger.info("Migration: %s", stmt)
+                    conn.execute(text(stmt))
+
     logger.info("Migration complete.")
 
 

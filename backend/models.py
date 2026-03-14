@@ -19,6 +19,13 @@ class RaceStatus(str, enum.Enum):
     dnf = "DNF"
 
 
+class LLMEvaluationStatus(str, enum.Enum):
+    pending = "pending"
+    processing = "processing"
+    completed = "completed"
+    failed = "failed"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -75,27 +82,12 @@ class Activity(Base):
     avg_hr = Column(Float)
     avg_cadence = Column(Float)
 
+    tcx_data = Column(Text, nullable=True)
+    is_treadmill = Column(Boolean, default=False, nullable=False)
+    llm_evaluation = Column(String(500), nullable=True)
+    llm_evaluation_status = Column(Enum(LLMEvaluationStatus), nullable=True)
+
     owner = relationship("User", back_populates="activities")
-    laps = relationship(
-        "Lap",
-        back_populates="activity",
-        cascade="all, delete-orphan"
-    )
-
-class Lap(Base):
-    __tablename__ = "laps"
-
-    id = Column(Integer, primary_key=True, index=True)
-    activity_id = Column(Integer, ForeignKey("activities.id", ondelete="CASCADE"))
-    lap_number = Column(Integer)
-    distance = Column(Float) # meters
-    time = Column(Float) # seconds
-    pace = Column(Float) # seconds per km
-    avg_hr = Column(Float)
-    max_hr = Column(Float)
-    avg_cadence = Column(Float)
-
-    activity = relationship("Activity", back_populates="laps")
 
 
 class Race(Base):

@@ -1,12 +1,13 @@
 import os
 import uuid
 import shutil
-from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from datetime import datetime, timedelta
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import models, schemas, database, auth, tcx_parser
+from services.llm.graph import evaluate_activity
 
 router = APIRouter(
     prefix="/races",
@@ -118,6 +119,7 @@ def update_race_result(
 @router.post("/{race_id}/upload-tcx", response_model=schemas.RaceOut)
 async def upload_race_tcx(
     race_id: int,
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(database.get_db),
@@ -141,17 +143,20 @@ async def upload_race_tcx(
 
     activity_data = parsed_activities[0]
 
-    # Check if this activity already exists
+    # Check if this activity already exists (within 5 min window)
+    start = activity_data['start_time']
     existing = db.query(models.Activity).filter(
         models.Activity.user_id == current_user.id,
-        models.Activity.start_time == activity_data['start_time']
+        models.Activity.start_time >= start - timedelta(minutes=5),
+        models.Activity.start_time <= start + timedelta(minutes=5),
     ).first()
 
     if existing:
-        # Link existing activity to race
         race.activity_id = existing.id
     else:
-        # Create new activity
+        is_treadmill = tcx_parser.detect_treadmill(content)
+        lightweight_tcx = tcx_parser.create_lightweight_tcx(content)
+
         db_activity = models.Activity(
             user_id=current_user.id,
             start_time=activity_data['start_time'],
@@ -159,26 +164,16 @@ async def upload_race_tcx(
             total_time=activity_data['total_time'],
             avg_pace=activity_data['avg_pace'],
             avg_hr=activity_data['avg_hr'],
-            avg_cadence=activity_data['avg_cadence']
+            avg_cadence=activity_data['avg_cadence'],
+            tcx_data=lightweight_tcx,
+            is_treadmill=is_treadmill,
+            llm_evaluation_status=models.LLMEvaluationStatus.pending,
         )
         db.add(db_activity)
         db.commit()
         db.refresh(db_activity)
 
-        for lap_data in activity_data['laps']:
-            db_lap = models.Lap(
-                activity_id=db_activity.id,
-                lap_number=lap_data['lap_number'],
-                distance=lap_data['distance'],
-                time=lap_data['time'],
-                pace=lap_data['pace'],
-                avg_hr=lap_data['avg_hr'],
-                max_hr=lap_data['max_hr'],
-                avg_cadence=lap_data['avg_cadence']
-            )
-            db.add(db_lap)
-
-        db.commit()
+        background_tasks.add_task(evaluate_activity, db_activity.id)
         race.activity_id = db_activity.id
 
     db.commit()
