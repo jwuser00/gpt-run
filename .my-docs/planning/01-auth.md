@@ -35,6 +35,8 @@
 **UI 구성:**
 - Email 입력 (필수)
 - Nickname 입력 (필수)
+- 생년월 선택 (필수) — 연도 Select + 월 Select
+- 성별 선택 (필수) — 라디오 버튼 (남성 / 여성)
 - Password 입력 (필수)
 - Password 확인 입력 (필수)
 - 비밀번호 강도 표시 (실시간)
@@ -43,9 +45,9 @@
 - "Already have an account? Login" 링크 → `/login`
 
 **동작:**
-1. 이메일/닉네임/비밀번호/비밀번호 확인 입력 후 Sign Up 클릭
+1. 이메일/닉네임/생년월/성별/비밀번호/비밀번호 확인 입력 후 Sign Up 클릭
 2. 프론트엔드 유효성 검증 (아래 규칙 참조)
-3. 검증 통과 시 `POST /users/` (JSON: email, nickname, password)
+3. 검증 통과 시 `POST /users/` (JSON: email, nickname, birth_year, birth_month, gender, password)
 4. 성공 → 자동 로그인 (`POST /users/token` 호출) → `/dashboard`로 리다이렉트
 5. 실패 (이메일 중복 등) → 에러 알림 표시
 
@@ -61,6 +63,17 @@
 - 2~20자
 - 빈 값 불가
 - helperText: "닉네임은 2~20자로 입력해주세요"
+
+**생년월:**
+- 연도: 1920~현재연도 범위의 Select
+- 월: 1~12 Select
+- 둘 다 필수
+- helperText: "생년월을 선택해주세요"
+
+**성별:**
+- 라디오 버튼: 남성 / 여성
+- 필수 선택
+- helperText: "성별을 선택해주세요"
 
 **비밀번호:**
 - 최소 8자 이상
@@ -87,7 +100,7 @@
 ```
 [Sign Up 클릭]
     ↓
-POST /users/ (email, nickname, password)
+POST /users/ (email, nickname, birth_year, birth_month, gender, password)
     ↓ 성공
 POST /users/token (username=email, password)
     ↓ 성공
@@ -193,7 +206,10 @@ localStorage에 JWT 저장 → /dashboard 이동
 
 | Endpoint | Method | Auth | Request | Response |
 |----------|--------|------|---------|----------|
-| `/users/` | POST | No | `{email, nickname, password}` | User object |
+| `/users/` | POST | No | `{email, nickname, birth_year, birth_month, gender, password}` | User object |
+| `/users/me` | GET | Yes | — | User profile object |
+| `/users/me` | PUT | Yes | `{nickname, birth_year, birth_month, gender}` | User profile object |
+| `/users/me/password` | PUT | Yes | `{current_password, new_password}` | `{message}` |
 | `/users/token` | POST | No | form-urlencoded `{username, password}` | `{access_token, token_type}` |
 | `/users/auth/google` | GET | No | — | Google OAuth2 redirect |
 | `/users/auth/google/callback` | GET | No | query: `code` | JWT redirect to frontend |
@@ -221,6 +237,9 @@ localStorage에 JWT 저장 → /dashboard 이동
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | nickname | String(50) | Yes | 사용자 닉네임 (2~20자) |
+| birth_year | Integer | Yes | 생년 (예: 1990) |
+| birth_month | Integer | Yes | 생월 (1~12) |
+| gender | String(10) | Yes | 성별 ("male" / "female") |
 | google_id | String(100) | No | Google OAuth2 sub (고유 ID). Nullable, unique |
 | hashed_password | String | No | Google 전용 가입 시 null 허용으로 변경 |
 
@@ -254,3 +273,6 @@ localStorage에 JWT 저장 → /dashboard 이동
 | 비밀번호 찾기 (이메일 링크 발송) | Not Implemented |
 | 비밀번호 재설정 | Not Implemented |
 | OCI Email Delivery 연동 | Not Implemented |
+| 회원가입 - 생년월/성별 입력 | Not Implemented |
+| 내 정보 조회/수정 | Not Implemented |
+| 비밀번호 변경 | Not Implemented |

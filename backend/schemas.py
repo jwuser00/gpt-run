@@ -45,11 +45,42 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     nickname: str
+    birth_year: int
+    birth_month: int
+    gender: str
 
 class User(UserBase):
     id: int
     nickname: str
+    birth_year: Optional[int] = None
+    birth_month: Optional[int] = None
+    gender: Optional[str] = None
+    has_password: bool = False
     activities: List[Activity] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserProfileUpdate(BaseModel):
+    nickname: str
+    birth_year: int
+    birth_month: int
+    gender: str
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class UserProfile(BaseModel):
+    email: str
+    nickname: str
+    birth_year: Optional[int] = None
+    birth_month: Optional[int] = None
+    gender: Optional[str] = None
+    has_google: bool
+    has_password: bool
 
     model_config = ConfigDict(from_attributes=True)
 

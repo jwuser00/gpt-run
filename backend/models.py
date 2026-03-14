@@ -27,6 +27,9 @@ class User(Base):
     hashed_password = Column(String(255), nullable=True)
     nickname = Column(String(50), nullable=False, default="")
     google_id = Column(String(100), nullable=True, unique=True)
+    birth_year = Column(Integer, nullable=True)
+    birth_month = Column(Integer, nullable=True)
+    gender = Column(String(10), nullable=True)
 
     activities = relationship(
         "Activity",

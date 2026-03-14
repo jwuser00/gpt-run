@@ -50,6 +50,9 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
         email=user.email,
         hashed_password=hashed_password,
         nickname=user.nickname,
+        birth_year=user.birth_year,
+        birth_month=user.birth_month,
+        gender=user.gender,
     )
     db.add(db_user)
     db.commit()
@@ -189,6 +192,80 @@ async def google_callback(code: str, db: Session = Depends(database.get_db)):
     return RedirectResponse(
         url=f"{FRONTEND_URL}/auth/google/callback?token={jwt_token}"
     )
+
+
+@router.get(
+    "/me",
+    response_model=schemas.UserProfile,
+    summary="내 프로필 조회",
+)
+def get_my_profile(
+    current_user: models.User = Depends(auth.get_current_user),
+):
+    """현재 로그인한 사용자의 프로필 정보를 반환합니다."""
+    return schemas.UserProfile(
+        email=current_user.email,
+        nickname=current_user.nickname,
+        birth_year=current_user.birth_year,
+        birth_month=current_user.birth_month,
+        gender=current_user.gender,
+        has_google=bool(current_user.google_id),
+        has_password=bool(current_user.hashed_password),
+    )
+
+
+@router.put(
+    "/me",
+    response_model=schemas.UserProfile,
+    summary="내 프로필 수정",
+)
+def update_my_profile(
+    profile_update: schemas.UserProfileUpdate,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    """닉네임, 생년월일, 성별을 수정합니다."""
+    current_user.nickname = profile_update.nickname
+    current_user.birth_year = profile_update.birth_year
+    current_user.birth_month = profile_update.birth_month
+    current_user.gender = profile_update.gender
+    db.commit()
+    db.refresh(current_user)
+    return schemas.UserProfile(
+        email=current_user.email,
+        nickname=current_user.nickname,
+        birth_year=current_user.birth_year,
+        birth_month=current_user.birth_month,
+        gender=current_user.gender,
+        has_google=bool(current_user.google_id),
+        has_password=bool(current_user.hashed_password),
+    )
+
+
+@router.put(
+    "/me/password",
+    response_model=schemas.MessageResponse,
+    summary="비밀번호 변경",
+)
+def change_password(
+    request: schemas.PasswordChangeRequest,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(database.get_db),
+):
+    """현재 비밀번호를 확인한 후 새 비밀번호로 변경합니다."""
+    if not current_user.hashed_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="비밀번호가 설정되지 않은 계정입니다.",
+        )
+    if not auth.verify_password(request.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="현재 비밀번호가 올바르지 않습니다.",
+        )
+    current_user.hashed_password = auth.get_password_hash(request.new_password)
+    db.commit()
+    return {"message": "비밀번호가 성공적으로 변경되었습니다."}
 
 
 @router.post(

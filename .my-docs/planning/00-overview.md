@@ -29,10 +29,11 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 │  ├─ /dashboard      대시보드        (sidebar)    │
 │  ├─ /activities     내 활동          (sidebar)    │
 │  │   └─ /activity/[id]  활동 상세                │
-│  └─ /races          대회 관리        (sidebar)    │
+│  ├─ /races          대회 관리        (sidebar)    │
 │      ├─ /races/new         새 대회 등록          │
 │      ├─ /races/[id]        대회 상세             │
 │      └─ /races/[id]/result 결과 입력             │
+│  └─ /profile        내 정보          (sidebar)    │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -50,7 +51,10 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 | **Auth** | Google SSO 로그인/가입 | Not Implemented |
 | **Auth** | 비밀번호 찾기 (이메일 링크) | Not Implemented |
 | **Auth** | 비밀번호 재설정 | Not Implemented |
+| **Auth** | 회원가입 - 생년월/성별 입력 | Not Implemented |
 | **Auth** | JWT 토큰 인증 (30분 만료) | Implemented |
+| **Profile** | 내 정보 조회/수정 (닉네임, 생년월, 성별) | Not Implemented |
+| **Profile** | 비밀번호 변경 | Not Implemented |
 | **Auth** | 세션 만료 모달 + 자동 로그아웃 | Implemented |
 | **Dashboard** | 다가오는 대회 (D-Day 카운트다운) | Implemented |
 | **Dashboard** | 이번 달 러닝 차트 (일별 거리 바 차트) | Implemented |
@@ -81,3 +85,4 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 | [04-activity-detail.md](./04-activity-detail.md) | 활동 상세 |
 | [05-races.md](./05-races.md) | 대회 관리 (목록/등록) |
 | [06-race-detail.md](./06-race-detail.md) | 대회 상세/결과 입력 |
+| [07-profile.md](./07-profile.md) | 내 정보 (프로필 조회/수정, 비밀번호 변경) |

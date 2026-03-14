@@ -29,6 +29,19 @@ export interface User {
   id: number;
   email: string;
   nickname: string;
+  birth_year: number | null;
+  birth_month: number | null;
+  gender: string | null;
+}
+
+export interface UserProfile {
+  email: string;
+  nickname: string;
+  birth_year: number | null;
+  birth_month: number | null;
+  gender: string | null;
+  has_google: boolean;
+  has_password: boolean;
 }
 
 export interface ToastState {

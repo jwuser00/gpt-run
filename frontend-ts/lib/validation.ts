@@ -43,3 +43,22 @@ export const getPasswordStrength = (
   }
   return 'weak';
 };
+
+export const validateBirthYear = (year: number | null): string | null => {
+  if (year === null) return '출생 연도를 선택해주세요';
+  const currentYear = new Date().getFullYear();
+  if (year < 1920 || year > currentYear) return '올바른 출생 연도를 선택해주세요';
+  return null;
+};
+
+export const validateBirthMonth = (month: number | null): string | null => {
+  if (month === null) return '출생 월을 선택해주세요';
+  if (month < 1 || month > 12) return '올바른 출생 월을 선택해주세요';
+  return null;
+};
+
+export const validateGender = (gender: string | null): string | null => {
+  if (gender === null || gender === '') return '성별을 선택해주세요';
+  if (gender !== 'male' && gender !== 'female') return '올바른 성별을 선택해주세요';
+  return null;
+};

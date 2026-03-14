@@ -11,6 +11,15 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import FormLabel from '@mui/material/FormLabel';
 import { register, login } from '@/lib/api/auth';
 import { useAuth } from '@/lib/hooks/useAuth';
 import {
@@ -18,20 +27,32 @@ import {
   validateNickname,
   validatePassword,
   validatePasswordConfirm,
+  validateBirthYear,
+  validateBirthMonth,
+  validateGender,
 } from '@/lib/validation';
 import PasswordStrengthBar from '@/components/auth/PasswordStrengthBar';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+const CURRENT_YEAR = new Date().getFullYear();
+const BIRTH_YEARS = Array.from({ length: CURRENT_YEAR - 1920 + 1 }, (_, i) => CURRENT_YEAR - i);
+
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [nickname, setNickname] = useState('');
+  const [birthYear, setBirthYear] = useState<number | null>(null);
+  const [birthMonth, setBirthMonth] = useState<number | null>(null);
+  const [gender, setGender] = useState<string>('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
 
   const [touched, setTouched] = useState({
     email: false,
     nickname: false,
+    birthYear: false,
+    birthMonth: false,
+    gender: false,
     password: false,
     passwordConfirm: false,
   });
@@ -44,11 +65,20 @@ export default function RegisterPage() {
 
   const emailError = validateEmail(email);
   const nicknameError = validateNickname(nickname);
+  const birthYearError = validateBirthYear(birthYear);
+  const birthMonthError = validateBirthMonth(birthMonth);
+  const genderError = validateGender(gender || null);
   const passwordError = validatePassword(password);
   const passwordConfirmError = validatePasswordConfirm(password, passwordConfirm);
 
   const isFormValid =
-    !emailError && !nicknameError && !passwordError && !passwordConfirmError;
+    !emailError &&
+    !nicknameError &&
+    !birthYearError &&
+    !birthMonthError &&
+    !genderError &&
+    !passwordError &&
+    !passwordConfirmError;
 
   const handleBlur = (field: keyof typeof touched) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -56,13 +86,21 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched({ email: true, nickname: true, password: true, passwordConfirm: true });
+    setTouched({
+      email: true,
+      nickname: true,
+      birthYear: true,
+      birthMonth: true,
+      gender: true,
+      password: true,
+      passwordConfirm: true,
+    });
     if (!isFormValid) return;
 
     setError('');
     setLoading(true);
     try {
-      await register(email, nickname, password);
+      await register(email, nickname, birthYear!, birthMonth!, gender, password);
       try {
         const data = await login(email, password);
         setToken(data.access_token);
@@ -121,6 +159,81 @@ export default function RegisterPage() {
               error={touched.nickname && !!nicknameError}
               helperText={touched.nickname && nicknameError ? nicknameError : ' '}
             />
+
+            <Box sx={{ display: 'flex', gap: 1.5, mt: 1 }}>
+              <FormControl
+                fullWidth
+                required
+                error={touched.birthYear && !!birthYearError}
+              >
+                <InputLabel id="birth-year-label">출생 연도</InputLabel>
+                <Select
+                  labelId="birth-year-label"
+                  value={birthYear ?? ''}
+                  label="출생 연도"
+                  onChange={(e) => setBirthYear(e.target.value as number)}
+                  onBlur={() => handleBlur('birthYear')}
+                >
+                  {BIRTH_YEARS.map((year) => (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>
+                  {touched.birthYear && birthYearError ? birthYearError : ' '}
+                </FormHelperText>
+              </FormControl>
+
+              <FormControl
+                sx={{ minWidth: 120 }}
+                required
+                error={touched.birthMonth && !!birthMonthError}
+              >
+                <InputLabel id="birth-month-label">월</InputLabel>
+                <Select
+                  labelId="birth-month-label"
+                  value={birthMonth ?? ''}
+                  label="월"
+                  onChange={(e) => setBirthMonth(e.target.value as number)}
+                  onBlur={() => handleBlur('birthMonth')}
+                >
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+                    <MenuItem key={month} value={month}>
+                      {month}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>
+                  {touched.birthMonth && birthMonthError ? birthMonthError : ' '}
+                </FormHelperText>
+              </FormControl>
+            </Box>
+
+            <Box sx={{ mt: 1, mb: 1 }}>
+              <FormControl
+                required
+                error={touched.gender && !!genderError}
+                component="fieldset"
+              >
+                <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
+                  성별
+                </FormLabel>
+                <RadioGroup
+                  row
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  onBlur={() => handleBlur('gender')}
+                >
+                  <FormControlLabel value="male" control={<Radio />} label="남성" />
+                  <FormControlLabel value="female" control={<Radio />} label="여성" />
+                </RadioGroup>
+                <FormHelperText>
+                  {touched.gender && genderError ? genderError : ' '}
+                </FormHelperText>
+              </FormControl>
+            </Box>
+
             <TextField
               fullWidth
               type="password"
