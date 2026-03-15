@@ -15,7 +15,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import engine, Base
-from routers import users, activities, races, dashboard
+from routers import users, activities, races, dashboard, plans
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +91,11 @@ def _run_migrations() -> None:
                 "ENUM('pending','processing','completed','failed') NULL"
             )
 
+        if "plan_session_id" not in existing_act:
+            act_stmts.append(
+                "ALTER TABLE activities ADD COLUMN plan_session_id INTEGER NULL"
+            )
+
         if act_stmts:
             with engine.begin() as conn:
                 for stmt in act_stmts:
@@ -130,6 +135,7 @@ app.include_router(users.router)
 app.include_router(activities.router)
 app.include_router(races.router)
 app.include_router(dashboard.router)
+app.include_router(plans.router)
 
 @app.get("/")
 def read_root():

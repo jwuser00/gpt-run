@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime, ForeignKey, Text, Enum, Index
+from sqlalchemy import Boolean, Column, Date, Integer, String, Float, DateTime, ForeignKey, Text, Enum, Index
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -26,6 +26,22 @@ class LLMEvaluationStatus(str, enum.Enum):
     failed = "failed"
 
 
+class PlanStatus(str, enum.Enum):
+    active = "active"
+    completed = "completed"
+    archived = "archived"
+
+
+class SessionType(str, enum.Enum):
+    Easy = "Easy"
+    Long = "Long"
+    Interval = "Interval"
+    Fast = "Fast"
+    Recovery = "Recovery"
+    Rest = "Rest"
+    Race = "Race"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -45,6 +61,11 @@ class User(Base):
     )
     races = relationship(
         "Race",
+        back_populates="owner",
+        cascade="all, delete-orphan"
+    )
+    plans = relationship(
+        "Plan",
         back_populates="owner",
         cascade="all, delete-orphan"
     )
@@ -86,8 +107,10 @@ class Activity(Base):
     is_treadmill = Column(Boolean, default=False, nullable=False)
     llm_evaluation = Column(String(500), nullable=True)
     llm_evaluation_status = Column(Enum(LLMEvaluationStatus), nullable=True)
+    plan_session_id = Column(Integer, ForeignKey("plan_sessions.id", ondelete="SET NULL"), nullable=True)
 
     owner = relationship("User", back_populates="activities")
+    plan_session = relationship("PlanSession", foreign_keys=[plan_session_id])
 
 
 class Race(Base):
@@ -125,3 +148,40 @@ class RaceImage(Base):
     uploaded_at = Column(DateTime, nullable=False)
 
     race = relationship("Race", back_populates="images")
+
+
+class Plan(Base):
+    __tablename__ = "plans"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    created_at = Column(DateTime, nullable=False)
+    start_date = Column(Date, nullable=True)
+    end_date = Column(Date, nullable=True)
+    user_prompt = Column(Text, nullable=False)
+    llm_plan_text = Column(Text, nullable=True)
+    status = Column(Enum(PlanStatus), nullable=False, default=PlanStatus.active)
+    generation_status = Column(Enum(LLMEvaluationStatus), nullable=True)
+
+    owner = relationship("User", back_populates="plans")
+    sessions = relationship(
+        "PlanSession",
+        back_populates="plan",
+        cascade="all, delete-orphan",
+        order_by="PlanSession.date"
+    )
+
+
+class PlanSession(Base):
+    __tablename__ = "plan_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    plan_id = Column(Integer, ForeignKey("plans.id", ondelete="CASCADE"))
+    date = Column(Date, nullable=False)
+    session_type = Column(Enum(SessionType), nullable=False)
+    title = Column(String(100), nullable=False)
+    description = Column(Text, nullable=True)
+    target_distance = Column(Float, nullable=True)  # meters
+    target_pace = Column(Float, nullable=True)  # seconds per km
+
+    plan = relationship("Plan", back_populates="sessions")

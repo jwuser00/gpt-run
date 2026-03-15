@@ -21,6 +21,7 @@ export interface Activity {
   is_treadmill: boolean;
   llm_evaluation: string | null;
   llm_evaluation_status: LLMEvaluationStatus | null;
+  plan_session_id: number | null;
 }
 
 export interface ActivityDetail extends Activity {
@@ -110,6 +111,47 @@ export interface RaceResultFormData {
   actual_time: number | null;
   activity_id: number | null;
   review: string;
+}
+
+// --- Plan types ---
+
+export type PlanStatus = 'active' | 'completed' | 'archived';
+export type SessionType = 'Easy' | 'Long' | 'Interval' | 'Fast' | 'Recovery' | 'Rest' | 'Race';
+export type PlanGenerationStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface PlanSession {
+  id: number;
+  plan_id: number;
+  date: string;
+  session_type: SessionType;
+  title: string;
+  description: string | null;
+  target_distance: number | null;
+  target_pace: number | null;
+}
+
+export interface PlanSessionBrief {
+  id: number;
+  date: string;
+  session_type: SessionType;
+  title: string;
+}
+
+export interface Plan {
+  id: number;
+  user_id: number;
+  created_at: string;
+  start_date: string | null;
+  end_date: string | null;
+  user_prompt: string;
+  llm_plan_text: string | null;
+  status: PlanStatus;
+  generation_status: PlanGenerationStatus | null;
+  session_count: number;
+}
+
+export interface PlanDetail extends Plan {
+  sessions: PlanSession[];
 }
 
 // --- Dashboard types ---

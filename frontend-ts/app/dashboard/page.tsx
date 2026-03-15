@@ -18,20 +18,27 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import AppLayout from "@/components/layout/AppLayout";
 import UpcomingRaceCard from "@/components/dashboard/UpcomingRaceCard";
 import MonthlyRunningChart from "@/components/dashboard/MonthlyRunningChart";
+import ActivePlanCard from "@/components/plan/ActivePlanCard";
 import { getDashboardData } from "@/lib/api/dashboard";
-import { DashboardData } from "@/lib/types";
+import { getActivePlan } from "@/lib/api/plans";
+import { DashboardData, PlanDetail } from "@/lib/types";
 import { toKST, formatPace, formatTimeFromSeconds } from "@/lib/utils/format";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
+  const [activePlan, setActivePlan] = useState<PlanDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const result = await getDashboardData();
+        const [result, plan] = await Promise.all([
+          getDashboardData(),
+          getActivePlan(),
+        ]);
         setData(result);
+        setActivePlan(plan);
       } catch {
         // handled by auth interceptor
       } finally {
@@ -98,6 +105,23 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         )}
+      </Box>
+
+      {/* Active Plan Section */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+          <Typography variant="h6" fontWeight={700}>
+            러닝 계획
+          </Typography>
+          <Button
+            size="small"
+            onClick={() => router.push("/plans")}
+            sx={{ textTransform: "none" }}
+          >
+            전체 보기
+          </Button>
+        </Box>
+        <ActivePlanCard plan={activePlan} />
       </Box>
 
       {/* Monthly Running Chart Section */}

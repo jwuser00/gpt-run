@@ -1,8 +1,8 @@
 from datetime import timedelta
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 import models
 import schemas
@@ -21,6 +21,7 @@ router = APIRouter(
 async def upload_tcx(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    plan_session_id: Optional[int] = Form(None),
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(database.get_db),
 ):
@@ -58,6 +59,7 @@ async def upload_tcx(
             tcx_data=lightweight_tcx,
             is_treadmill=is_treadmill,
             llm_evaluation_status=models.LLMEvaluationStatus.pending,
+            plan_session_id=plan_session_id,
         )
         db.add(db_activity)
         db.commit()

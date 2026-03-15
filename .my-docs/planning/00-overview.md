@@ -34,6 +34,9 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 │      ├─ /races/new         새 대회 등록          │
 │      ├─ /races/[id]        대회 상세             │
 │      └─ /races/[id]/result 결과 입력             │
+│  ├─ /plans         러닝 계획        (sidebar)    │
+│  │   ├─ /plans/new        계획 만들기              │
+│  │   └─ /plans/[id]       계획 상세                │
 │  └─ /profile        내 정보          (sidebar)    │
 └─────────────────────────────────────────────────┘
 ```
@@ -44,18 +47,18 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 |------|---------|--------|
 | **Auth** | Email/Password 로그인 | Implemented |
 | **Auth** | 회원가입 (기본) | Implemented |
-| **Auth** | 회원가입 - 닉네임 필드 | Not Implemented |
-| **Auth** | 회원가입 - 비밀번호 확인 입력 | Not Implemented |
-| **Auth** | 회원가입 - 비밀번호 강도 검증 | Not Implemented |
-| **Auth** | 회원가입 - 이메일 형식 검증 | Not Implemented |
-| **Auth** | 회원가입 - 가입 후 자동 로그인 | Not Implemented |
-| **Auth** | Google SSO 로그인/가입 | Not Implemented |
-| **Auth** | 비밀번호 찾기 (이메일 링크) | Not Implemented |
-| **Auth** | 비밀번호 재설정 | Not Implemented |
-| **Auth** | 회원가입 - 생년월/성별 입력 | Not Implemented |
+| **Auth** | 회원가입 - 닉네임 필드 | Implemented |
+| **Auth** | 회원가입 - 비밀번호 확인 입력 | Implemented |
+| **Auth** | 회원가입 - 비밀번호 강도 검증 | Implemented |
+| **Auth** | 회원가입 - 이메일 형식 검증 | Implemented |
+| **Auth** | 회원가입 - 가입 후 자동 로그인 | Implemented |
+| **Auth** | Google SSO 로그인/가입 | Implemented |
+| **Auth** | 비밀번호 찾기 (이메일 링크) | Implemented |
+| **Auth** | 비밀번호 재설정 | Implemented |
+| **Auth** | 회원가입 - 생년월/성별 입력 | Implemented |
 | **Auth** | JWT 토큰 인증 (30분 만료) | Implemented |
-| **Profile** | 내 정보 조회/수정 (닉네임, 생년월, 성별) | Not Implemented |
-| **Profile** | 비밀번호 변경 | Not Implemented |
+| **Profile** | 내 정보 조회/수정 (닉네임, 생년월, 성별) | Implemented |
+| **Profile** | 비밀번호 변경 | Implemented |
 | **Auth** | 세션 만료 모달 + 자동 로그아웃 | Implemented |
 | **Dashboard** | 다가오는 대회 (D-Day 카운트다운) | Implemented |
 | **Dashboard** | 이번 달 러닝 차트 (일별 거리 바 차트) | Implemented |
@@ -75,14 +78,20 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 | **Race Result** | 활동 연결 (TCX 업로드 / 기존 활동 선택) | Implemented |
 | **Race Result** | 사진 업로드 (최대 5장, 5MB) | Implemented |
 | **Race Result** | 후기 작성 | Implemented |
-| **Activity Detail** | 트레드밀 판단 및 표시 | Not Implemented |
-| **Activity Detail** | LLM 러닝 평가 표시 | Not Implemented |
-| **Activities** | 업로드 시 LLM 평가 상태 표시 | Not Implemented |
-| **LLM Coaching** | 경량 TCX 생성 및 저장 | Not Implemented |
-| **LLM Coaching** | LangGraph 평가 파이프라인 | Not Implemented |
-| **LLM Coaching** | Langfuse 추적 연동 | Not Implemented |
-| **LLM Coaching** | Lap 테이블 제거 → TCX 재파싱 | Not Implemented |
-| **LLM Coaching** | 러닝 계획 추천 | Not Implemented (향후) |
+| **Activity Detail** | 트레드밀 판단 및 표시 | Implemented |
+| **Activity Detail** | LLM 러닝 평가 표시 | Implemented |
+| **Activities** | 업로드 시 LLM 평가 상태 표시 | Implemented |
+| **LLM Coaching** | 경량 TCX 생성 및 저장 | Implemented |
+| **LLM Coaching** | LangGraph 평가 파이프라인 | Implemented |
+| **LLM Coaching** | Langfuse 추적 연동 | Implemented |
+| **LLM Coaching** | Lap 테이블 제거 → TCX 재파싱 | Implemented |
+| **LLM Coaching** | 러닝 계획 추천 | Not Implemented |
+| **Plans** | 계획 목록 페이지 | Not Implemented |
+| **Plans** | 계획 생성 (사용자 Prompt → LLM High) | Not Implemented |
+| **Plans** | 계획 상세 (세션 리스트, 활동 연결 상태) | Not Implemented |
+| **Dashboard** | 활성 계획 요약 카드 | Not Implemented |
+| **Activities** | 업로드 시 계획 세션 선택 | Not Implemented |
+| **LLM Coaching** | 계획 세션 연결 시 평가에 반영 | Not Implemented |
 
 ## Detail Documents
 

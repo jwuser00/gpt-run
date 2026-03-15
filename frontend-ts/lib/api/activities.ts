@@ -1,9 +1,15 @@
 import client from './client';
 import { Activity, ActivityDetail } from '../types';
 
-export const uploadActivity = async (file: File): Promise<Activity> => {
+export const uploadActivity = async (
+  file: File,
+  planSessionId?: number | null,
+): Promise<Activity> => {
   const formData = new FormData();
   formData.append('file', file);
+  if (planSessionId) {
+    formData.append('plan_session_id', String(planSessionId));
+  }
   const response = await client.post('/activities/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });

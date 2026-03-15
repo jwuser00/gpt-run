@@ -11,12 +11,14 @@ import ActivityFilters from "@/components/activity/ActivityFilters";
 import Toast from "@/components/common/Toast";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import { getActivities, uploadActivity, deleteActivity } from "@/lib/api/activities";
+import { getActivePlan, getPlanSessions } from "@/lib/api/plans";
 import { validateTCXFile } from "@/lib/utils/format";
 import { useToast } from "@/lib/hooks/useToast";
-import { Activity } from "@/lib/types";
+import { Activity, PlanSessionBrief } from "@/lib/types";
 
 export default function ActivitiesPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [planSessions, setPlanSessions] = useState<PlanSessionBrief[]>([]);
   const [uploading, setUploading] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | "all">("all");
@@ -36,9 +38,22 @@ export default function ActivitiesPage() {
     }
   }, []);
 
+  const loadPlanSessions = useCallback(async () => {
+    try {
+      const plan = await getActivePlan();
+      if (plan) {
+        const sessions = await getPlanSessions(plan.id);
+        setPlanSessions(sessions);
+      }
+    } catch {
+      // plan sessions are optional
+    }
+  }, []);
+
   useEffect(() => {
     loadActivities();
-  }, [loadActivities]);
+    loadPlanSessions();
+  }, [loadActivities, loadPlanSessions]);
 
   // Auto-refresh when any activity has pending/processing LLM evaluation
   useEffect(() => {
@@ -78,7 +93,7 @@ export default function ActivitiesPage() {
     return yearMatch && monthMatch;
   });
 
-  const handleUpload = async (file: File) => {
+  const handleUpload = async (file: File, planSessionId?: number | null) => {
     if (!validateTCXFile(file)) {
       showToast("TCX 파일만 업로드 가능합니다", "error");
       return;
@@ -86,7 +101,7 @@ export default function ActivitiesPage() {
 
     setUploading(true);
     try {
-      await uploadActivity(file);
+      await uploadActivity(file, planSessionId);
       showToast("업로드가 완료되었습니다", "success");
       await loadActivities();
     } catch (error: unknown) {
@@ -137,7 +152,7 @@ export default function ActivitiesPage() {
         <Typography variant="h4" sx={{ whiteSpace: "nowrap" }}>
           내 활동
         </Typography>
-        <ActivityUpload uploading={uploading} onUpload={handleUpload} />
+        <ActivityUpload uploading={uploading} onUpload={handleUpload} planSessions={planSessions} />
       </Box>
 
       <ActivityFilters

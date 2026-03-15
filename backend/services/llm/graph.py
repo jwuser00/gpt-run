@@ -47,7 +47,24 @@ def _format_activity_summary(activity: models.Activity) -> str:
     )
 
 
-def _build_prompt(activity: models.Activity, recent: list[models.Activity], user: models.User) -> str:
+def _format_plan_session(session: models.PlanSession) -> str:
+    """PlanSession을 프롬프트용 텍스트로 변환한다."""
+    parts = [f"- 유형: {session.session_type.value}, 제목: {session.title}"]
+    if session.description:
+        parts.append(f"  설명: {session.description}")
+    if session.target_distance:
+        parts.append(f"  목표 거리: {session.target_distance / 1000:.1f}km")
+    if session.target_pace:
+        parts.append(f"  목표 페이스: {_format_pace(session.target_pace)}/km")
+    return "\n".join(parts)
+
+
+def _build_prompt(
+    activity: models.Activity,
+    recent: list[models.Activity],
+    user: models.User,
+    plan_session: models.PlanSession | None = None,
+) -> str:
     """평가 프롬프트를 렌더링한다."""
     template = load_prompt("evaluation")
 
@@ -57,6 +74,10 @@ def _build_prompt(activity: models.Activity, recent: list[models.Activity], user
         for r in recent:
             lines.append(_format_activity_summary(r))
         recent_text = "\n".join(lines)
+
+    plan_session_text = "없음"
+    if plan_session:
+        plan_session_text = _format_plan_session(plan_session)
 
     return template.format(
         distance_km=f"{activity.total_distance / 1000:.2f}",
@@ -69,6 +90,7 @@ def _build_prompt(activity: models.Activity, recent: list[models.Activity], user
         gender=user.gender or "미입력",
         birth_year=user.birth_year or "미입력",
         birth_month=user.birth_month or "",
+        plan_session=plan_session_text,
     )
 
 
@@ -135,7 +157,14 @@ def evaluate_activity(activity_id: int) -> None:
             .all()
         )
 
-        prompt = _build_prompt(activity, recent, user)
+        # 계획 세션 로드 (연결된 경우)
+        plan_session = None
+        if activity.plan_session_id:
+            plan_session = db.query(models.PlanSession).filter(
+                models.PlanSession.id == activity.plan_session_id
+            ).first()
+
+        prompt = _build_prompt(activity, recent, user, plan_session)
 
         # LangGraph 실행
         result = _graph.invoke({

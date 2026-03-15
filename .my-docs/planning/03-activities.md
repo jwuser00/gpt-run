@@ -24,10 +24,13 @@ GPS 워치에서 추출한 TCX 파일을 드래그앤드롭 또는 클릭으로 
 **동작:**
 1. TCX 파일 선택 또는 드래그앤드롭
 2. `.tcx` 확장자 검증
-3. `POST /activities/upload` (multipart/form-data)
-4. 성공 → 성공 토스트 + 목록 새로고침 + 카드에 "AI 분석중..." 표시
-5. 중복 (409) → 경고 토스트 "이미 업로드된 활동입니다"
-6. 실패 → 에러 토스트
+3. 계획 세션 선택 (활성 계획이 있는 경우):
+   - "Free Run" (기본값, plan_session_id = null)
+   - 활성 계획의 세션 목록 (날짜 + 유형 + 제목, 오늘/근일 세션 상단)
+4. `POST /activities/upload` (multipart/form-data + plan_session_id)
+5. 성공 → 성공 토스트 + 목록 새로고침 + 카드에 "AI 분석중..." 표시
+6. 중복 (409) → 경고 토스트 "이미 업로드된 활동입니다"
+7. 실패 → 에러 토스트
 
 **업로드 후 LLM 평가:**
 - 업로드 응답은 즉시 반환 (evaluation_status = "pending")

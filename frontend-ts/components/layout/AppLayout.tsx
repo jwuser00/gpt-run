@@ -13,6 +13,7 @@ import Divider from "@mui/material/Divider";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "@/lib/hooks/useAuth";
@@ -25,6 +26,7 @@ const menuItems = [
   { label: "대시보드", icon: <DashboardIcon />, path: "/dashboard", exact: true },
   { label: "내 활동", icon: <DirectionsRunIcon />, path: "/activities", exact: false },
   { label: "대회 관리", icon: <EmojiEventsIcon />, path: "/races", exact: false },
+  { label: "러닝 계획", icon: <CalendarMonthIcon />, path: "/plans", exact: false },
   { label: "내 정보", icon: <PersonIcon />, path: "/profile", exact: false },
 ];
 

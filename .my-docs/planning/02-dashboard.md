@@ -58,6 +58,21 @@
 - 최근 5개 활동 (start_time DESC)
 - 필드: id, start_time, total_distance, total_time, avg_pace, avg_hr
 
+### 4. 러닝 계획 요약 (Active Plan Card)
+
+현재 활성 계획이 있으면 요약 표시.
+
+**UI 구성:**
+- 활성 계획이 있는 경우:
+  - 계획 기간 (시작일 ~ 종료일)
+  - 이번 주 세션 요약 (오늘/다가오는 세션 강조)
+  - "상세 보기" 링크 → `/plans/[id]`
+- 활성 계획이 없는 경우:
+  - "러닝 계획을 세워보세요" 메시지 + "계획 만들기" 버튼 → `/plans/new`
+
+**데이터:**
+- status=active인 Plan 1개 + 해당 PlanSession 목록
+
 ## Backend API
 
 | Endpoint | Method | Auth | Response |

@@ -34,15 +34,16 @@ echo "[2/4] Setting up environment..."
 $SSH_CMD "cp $REMOTE_DIR/.env.prd $REMOTE_DIR/.env"
 
 # 3. Docker Compose build & up
-echo "[3/4] Building and starting containers..."
+echo "[3/3] Building and starting containers..."
 $SSH_CMD "cd $REMOTE_DIR && docker compose --env-file .env up --build -d"
 
 # 4. 상태 확인
-echo "[4/4] Checking status..."
+echo "[4/3] Checking status..."
 sleep 10
 $SSH_CMD "cd $REMOTE_DIR && docker compose ps"
 
 echo ""
 echo "=== Deploy complete ==="
-echo "Frontend: http://$SERVER_IP:3000"
-echo "Backend:  http://$SERVER_IP:8000/docs"
+echo "Frontend: https://gpt-run.com"
+echo "Backend:  https://gpt-run.com/api/docs"
+echo "✅ Let's Encrypt SSL certificate (auto-renewal enabled)"

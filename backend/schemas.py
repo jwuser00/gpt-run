@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 
 
@@ -40,6 +40,7 @@ class Activity(ActivityBase):
     is_treadmill: bool = False
     llm_evaluation: str | None = None
     llm_evaluation_status: LLMEvaluationStatus | None = None
+    plan_session_id: int | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -214,3 +215,66 @@ class DashboardData(BaseModel):
     upcoming_races: List[RaceOut] = []
     monthly_running: List[MonthlyRunningDay] = []
     recent_activities: List[RecentActivity] = []
+
+
+# --- Plan schemas ---
+
+class PlanStatus(str, Enum):
+    active = "active"
+    completed = "completed"
+    archived = "archived"
+
+
+class SessionType(str, Enum):
+    Easy = "Easy"
+    Long = "Long"
+    Interval = "Interval"
+    Fast = "Fast"
+    Recovery = "Recovery"
+    Rest = "Rest"
+    Race = "Race"
+
+
+class PlanCreate(BaseModel):
+    user_prompt: str
+
+
+class PlanSessionOut(BaseModel):
+    id: int
+    plan_id: int
+    date: date
+    session_type: SessionType
+    title: str
+    description: str | None = None
+    target_distance: float | None = None
+    target_pace: float | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PlanSessionBrief(BaseModel):
+    id: int
+    date: date
+    session_type: SessionType
+    title: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PlanOut(BaseModel):
+    id: int
+    user_id: int
+    created_at: datetime
+    start_date: date | None = None
+    end_date: date | None = None
+    user_prompt: str
+    llm_plan_text: str | None = None
+    status: PlanStatus
+    generation_status: LLMEvaluationStatus | None = None
+    session_count: int = 0
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PlanDetail(PlanOut):
+    sessions: list[PlanSessionOut] = []
