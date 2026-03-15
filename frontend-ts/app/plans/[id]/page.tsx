@@ -9,10 +9,11 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Chip from "@mui/material/Chip";
+import Grid from "@mui/material/Grid";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AppLayout from "@/components/layout/AppLayout";
-import PlanSessionList from "@/components/plan/PlanSessionList";
+import PlanSessionCard from "@/components/plan/PlanSessionCard";
 import ConfirmDialog from "@/components/common/ConfirmDialog";
 import Toast from "@/components/common/Toast";
 import { getPlan, deletePlan } from "@/lib/api/plans";
@@ -173,28 +174,15 @@ export default function PlanDetailPage() {
         </Card>
       )}
 
-      {/* Plan text */}
-      {plan.llm_plan_text && (
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="caption" color="text.secondary" fontWeight={600}>
-              AI 코칭
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 0.5, whiteSpace: "pre-line" }}>
-              {plan.llm_plan_text}
-            </Typography>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Sessions */}
       {plan.sessions.length > 0 && (
-        <Box>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-            세션 ({plan.sessions.length}개)
-          </Typography>
-          <PlanSessionList sessions={plan.sessions} />
-        </Box>
+        <Grid container spacing={2}>
+          {plan.sessions.map((session) => (
+            <Grid key={session.id} size={{ xs: 12, sm: 6, md: 4 }}>
+              <PlanSessionCard session={session} />
+            </Grid>
+          ))}
+        </Grid>
       )}
 
       <Toast toast={toast} onClose={closeToast} />

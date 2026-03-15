@@ -96,32 +96,73 @@ def _call_llm_node(state: PlanState) -> dict:
             logger.warning("Langfuse 콜백 초기화 실패: %s", e)
 
     result = llm.invoke(state["prompt"], config={"callbacks": callbacks})
-    return {"raw_response": result.content}
+    content = result.content
+    logger.info("LLM 응답 type=%s, len=%s", type(content).__name__, len(content) if isinstance(content, str) else "N/A")
+    logger.info("LLM 응답 처음 500자: %s", content[:500] if isinstance(content, str) else repr(content)[:500])
+    return {"raw_response": content}
 
 
 def _parse_response_node(state: PlanState) -> dict:
     raw = state["raw_response"]
 
-    # JSON 블록 추출 (```json ... ``` 또는 { ... })
+    # content가 list인 경우 (Claude 등) 텍스트 추출
+    if isinstance(raw, list):
+        logger.info("raw_response가 list 타입 — 텍스트 블록 추출")
+        text_parts = []
+        for block in raw:
+            if isinstance(block, dict) and block.get("type") == "text":
+                text_parts.append(block["text"])
+            elif isinstance(block, str):
+                text_parts.append(block)
+        raw = "\n".join(text_parts)
+
+    if not isinstance(raw, str):
+        logger.warning("raw_response 타입 비정상: %s", type(raw).__name__)
+        return {"plan_text": str(raw), "sessions": []}
+
+    logger.info("파싱 시작 — raw 길이: %d", len(raw))
+
+    # 1) ```json 블록 추출
     json_str = raw
     if "```json" in raw:
         start = raw.index("```json") + 7
         end = raw.find("```", start)
         json_str = raw[start:end].strip() if end != -1 else raw[start:].strip()
+        logger.info("```json 블록 추출 완료 — json_str 길이: %d", len(json_str))
     elif "```" in raw:
         start = raw.index("```") + 3
         end = raw.find("```", start)
         json_str = raw[start:end].strip() if end != -1 else raw[start:].strip()
+        logger.info("``` 블록 추출 완료 — json_str 길이: %d", len(json_str))
+    else:
+        logger.info("코드 블록 없음 — raw 전체를 json_str로 사용")
 
+    # 2) JSON 파싱 시도, 실패 시 { } 범위로 재시도
+    data = None
     try:
         data = json.loads(json_str)
-    except json.JSONDecodeError:
-        # JSON 파싱 실패 시 전체 텍스트를 plan_text로 사용
-        logger.warning("Plan JSON 파싱 실패, 텍스트로 저장")
+        logger.info("json_str 파싱 성공")
+    except json.JSONDecodeError as e1:
+        logger.info("json_str 파싱 실패: %s — fallback 시도", e1)
+        first = raw.find("{")
+        last = raw.rfind("}")
+        if first != -1 and last > first:
+            fallback_str = raw[first:last + 1]
+            try:
+                data = json.loads(fallback_str)
+                logger.info("fallback 파싱 성공")
+            except json.JSONDecodeError as e2:
+                logger.warning("Plan JSON 파싱 최종 실패: json_str=%s, error=%s", json_str[:200], e2)
+        else:
+            logger.warning("fallback 불가 — { } 범위 없음")
+
+    if data is None:
+        logger.warning("data=None — 세션 0개 반환")
         return {"plan_text": raw, "sessions": []}
 
     plan_text = data.get("plan_text", raw)
     sessions = data.get("sessions", [])
+    logger.info("파싱 완료 — plan_text 길이: %d, sessions 수: %d", len(plan_text), len(sessions))
 
     valid_types = {"Easy", "Long", "Interval", "Fast", "Recovery", "Rest", "Race"}
     validated = []
@@ -197,6 +238,9 @@ def generate_plan(plan_id: int) -> None:
             "plan_text": "",
             "sessions": [],
         })
+
+        logger.info("Plan %d graph 결과: plan_text 길이=%d, sessions 수=%d",
+                    plan_id, len(result.get("plan_text", "")), len(result.get("sessions", [])))
 
         plan.llm_plan_text = result["plan_text"]
 

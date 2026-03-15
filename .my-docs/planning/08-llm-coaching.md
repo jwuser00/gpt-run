@@ -312,22 +312,25 @@ backend/
 
 - 사이드바 메뉴: "러닝 계획"
 - "계획 만들기" 버튼
-- 계획 카드 리스트: 기간, 상태(active/completed/archived), 세션 수
+- 활성 계획의 **세션 카드 그리드** 표시 (ActivityCard와 유사한 레이아웃)
+  - PlanCard(계획 요약)가 아닌, 세션 하나하나를 개별 카드로 표시
+  - 계획 생성중(pending/processing)이면 스피너 표시
 
 ### `/plans/new` — 계획 생성
 
 - 사용자 Prompt 입력 (textarea)
 - 최근 계획의 user_prompt를 기본값으로 표시
 - 첫 생성 시 예시 문구 표시
-- "생성" 버튼 → 비동기 LLM 호출 → 생성 완료 후 상세 페이지로 이동
+- "생성" 버튼 → 비동기 LLM 호출 → 생성 완료 후 목록 페이지로 이동
 
 ### `/plans/[id]` — 계획 상세
 
-- 계획 전체 텍스트 (LLM 원문)
-- 세션 리스트 (날짜순):
-  - 날짜, 유형 Chip, 제목, 설명
-  - 연결된 Activity가 있으면 표시 (거리, 페이스)
-  - 미완료 세션은 시각적으로 구분
+- `llm_plan_text`는 UI에 표시하지 않음 (평가 프롬프트 전용)
+- 세션 카드 그리드 (ActivityCard와 유사한 디자인):
+  - 아이콘 (세션 유형별 구분) + 날짜
+  - 세션 유형 Chip + 제목
+  - 목표 거리, 목표 페이스 (2x2 Grid)
+  - 설명 텍스트
 - 삭제 버튼
 
 ### 대시보드 변경
@@ -359,13 +362,13 @@ backend/
 | Langfuse 추적 연동 | Implemented |
 | Prompt 파일 관리 | Implemented |
 | 평가 재시도 API | Implemented |
-| 계획 세션 연결 시 평가에 반영 | Not Implemented |
-| Plan / PlanSession 테이블 | Not Implemented |
-| 계획 생성 LLM 파이프라인 (High model) | Not Implemented |
-| 계획 생성 프롬프트 (plan.txt) | Not Implemented |
-| 계획 CRUD API | Not Implemented |
-| /plans 페이지 (목록) | Not Implemented |
-| /plans/new 페이지 (생성) | Not Implemented |
-| /plans/[id] 페이지 (상세) | Not Implemented |
-| 대시보드 계획 요약 카드 | Not Implemented |
-| 업로드 시 계획 세션 선택 | Not Implemented |
+| 계획 세션 연결 시 평가에 반영 | Implemented |
+| Plan / PlanSession 테이블 | Implemented |
+| 계획 생성 LLM 파이프라인 (High model) | Partially Implemented (JSON 파싱 버그) |
+| 계획 생성 프롬프트 (plan.txt) | Implemented |
+| 계획 CRUD API | Implemented |
+| /plans 페이지 (목록) | Partially Implemented (세션 카드 그리드로 변경 필요) |
+| /plans/new 페이지 (생성) | Implemented |
+| /plans/[id] 페이지 (상세) | Partially Implemented (세션 카드 그리드로 변경 필요) |
+| 대시보드 계획 요약 카드 | Implemented |
+| 업로드 시 계획 세션 선택 | Implemented |
