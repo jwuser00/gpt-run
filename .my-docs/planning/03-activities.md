@@ -102,5 +102,5 @@ GPS 워치에서 추출한 TCX 파일을 드래그앤드롭 또는 클릭으로 
 | 활동 목록 (연/월 필터) | Implemented |
 | 활동 삭제 (확인 다이얼로그) | Implemented |
 | 중복 업로드 감지 | Implemented |
-| 트레드밀 뱃지 표시 | Not Implemented |
-| LLM 평가 상태 표시 (카드) | Not Implemented |
+| 트레드밀 뱃지 표시 | Implemented |
+| LLM 평가 상태 표시 (카드) | Implemented |

@@ -114,8 +114,8 @@ Recharts 이중축 라인 차트.
 | Feature | Status |
 |---------|--------|
 | 활동 요약 (5개 지표) | Implemented |
-| 랩 분석 테이블 | Implemented (Lap 테이블 → TCX 재파싱으로 변경 필요) |
-| 페이스 & 심박수 차트 | Implemented (데이터 소스 변경 필요) |
-| 트레드밀 판단 및 표시 | Not Implemented |
-| LLM 러닝 평가 표시 | Not Implemented |
-| 평가 재시도 | Not Implemented |
+| 랩 분석 테이블 | Implemented |
+| 페이스 & 심박수 차트 | Implemented |
+| 트레드밀 판단 및 표시 | Implemented |
+| LLM 러닝 평가 표시 | Implemented |
+| 평가 재시도 | Implemented |

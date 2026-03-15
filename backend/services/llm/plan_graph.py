@@ -73,6 +73,14 @@ def _build_plan_prompt(
         races_text = "\n".join(lines)
 
     today = date.today()
+    weekday_names = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    today_weekday = weekday_names[today.weekday()]
+
+    calendar_lines = []
+    for i in range(21):
+        d = today + timedelta(days=i)
+        calendar_lines.append(f"- {d.isoformat()} ({weekday_names[d.weekday()]})")
+
     return template.format(
         user_prompt=user_prompt,
         recent_activities=activities_text,
@@ -81,6 +89,8 @@ def _build_plan_prompt(
         birth_year=user.birth_year or "미입력",
         birth_month=user.birth_month or "",
         today=today.isoformat(),
+        today_weekday=today_weekday,
+        calendar_lines="\n".join(calendar_lines),
     )
 
 

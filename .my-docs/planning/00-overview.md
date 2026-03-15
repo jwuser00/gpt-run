@@ -85,13 +85,13 @@ GPS 워치에서 추출한 TCX 파일을 업로드하여 러닝 활동을 기록
 | **LLM Coaching** | LangGraph 평가 파이프라인 | Implemented |
 | **LLM Coaching** | Langfuse 추적 연동 | Implemented |
 | **LLM Coaching** | Lap 테이블 제거 → TCX 재파싱 | Implemented |
-| **LLM Coaching** | 러닝 계획 추천 | Not Implemented |
-| **Plans** | 계획 목록 페이지 | Not Implemented |
-| **Plans** | 계획 생성 (사용자 Prompt → LLM High) | Not Implemented |
-| **Plans** | 계획 상세 (세션 리스트, 활동 연결 상태) | Not Implemented |
-| **Dashboard** | 활성 계획 요약 카드 | Not Implemented |
-| **Activities** | 업로드 시 계획 세션 선택 | Not Implemented |
-| **LLM Coaching** | 계획 세션 연결 시 평가에 반영 | Not Implemented |
+| **LLM Coaching** | 러닝 계획 추천 | Implemented |
+| **Plans** | 계획 목록 페이지 | Implemented |
+| **Plans** | 계획 생성 (사용자 Prompt → LLM High) | Implemented |
+| **Plans** | 계획 상세 (세션 리스트, 활동 연결 상태) | Implemented |
+| **Dashboard** | 활성 계획 요약 카드 | Implemented |
+| **Activities** | 업로드 시 계획 세션 선택 | Implemented |
+| **LLM Coaching** | 계획 세션 연결 시 평가에 반영 | Implemented |
 
 ## Detail Documents
 

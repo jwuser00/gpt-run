@@ -364,11 +364,11 @@ backend/
 | 평가 재시도 API | Implemented |
 | 계획 세션 연결 시 평가에 반영 | Implemented |
 | Plan / PlanSession 테이블 | Implemented |
-| 계획 생성 LLM 파이프라인 (High model) | Partially Implemented (JSON 파싱 버그) |
+| 계획 생성 LLM 파이프라인 (High model) | Implemented |
 | 계획 생성 프롬프트 (plan.txt) | Implemented |
 | 계획 CRUD API | Implemented |
-| /plans 페이지 (목록) | Partially Implemented (세션 카드 그리드로 변경 필요) |
+| /plans 페이지 (목록) | Implemented |
 | /plans/new 페이지 (생성) | Implemented |
-| /plans/[id] 페이지 (상세) | Partially Implemented (세션 카드 그리드로 변경 필요) |
+| /plans/[id] 페이지 (상세) | Implemented |
 | 대시보드 계획 요약 카드 | Implemented |
 | 업로드 시 계획 세션 선택 | Implemented |

@@ -263,16 +263,16 @@ localStorage에 JWT 저장 → /dashboard 이동
 | JWT 토큰 발급 (30분 만료) | Implemented |
 | 세션 만료 모달 + 자동 로그아웃 | Implemented |
 | 회원가입 (email + password) | Implemented |
-| 비밀번호 확인 입력 (2개 입력) | Not Implemented |
-| 비밀번호 강도 검증 (프론트엔드) | Not Implemented |
-| 이메일 형식 검증 (프론트엔드) | Not Implemented |
-| 닉네임 필드 추가 | Not Implemented |
-| 가입 후 자동 로그인 | Not Implemented |
-| Google SSO 로그인/가입 | Not Implemented |
-| Google 계정 자동 연결 (동일 이메일) | Not Implemented |
-| 비밀번호 찾기 (이메일 링크 발송) | Not Implemented |
-| 비밀번호 재설정 | Not Implemented |
-| OCI Email Delivery 연동 | Not Implemented |
-| 회원가입 - 생년월/성별 입력 | Not Implemented |
-| 내 정보 조회/수정 | Not Implemented |
-| 비밀번호 변경 | Not Implemented |
+| 비밀번호 확인 입력 (2개 입력) | Implemented |
+| 비밀번호 강도 검증 (프론트엔드) | Implemented |
+| 이메일 형식 검증 (프론트엔드) | Implemented |
+| 닉네임 필드 추가 | Implemented |
+| 가입 후 자동 로그인 | Implemented |
+| Google SSO 로그인/가입 | Implemented |
+| Google 계정 자동 연결 (동일 이메일) | Implemented |
+| 비밀번호 찾기 (이메일 링크 발송) | Implemented |
+| 비밀번호 재설정 | Implemented |
+| OCI Email Delivery 연동 | Implemented |
+| 회원가입 - 생년월/성별 입력 | Implemented |
+| 내 정보 조회/수정 | Implemented |
+| 비밀번호 변경 | Implemented |

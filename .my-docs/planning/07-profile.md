@@ -62,7 +62,7 @@
 
 | Feature | Status |
 |---------|--------|
-| 프로필 조회 (GET /users/me) | Not Implemented |
-| 프로필 수정 (닉네임, 생년월, 성별) | Not Implemented |
-| 비밀번호 변경 | Not Implemented |
-| Google 연동 상태 표시 | Not Implemented |
+| 프로필 조회 (GET /users/me) | Implemented |
+| 프로필 수정 (닉네임, 생년월, 성별) | Implemented |
+| 비밀번호 변경 | Implemented |
+| Google 연동 상태 표시 | Implemented |
